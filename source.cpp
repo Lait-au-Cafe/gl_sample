@@ -5,10 +5,39 @@
 
 #define GL_GLEXT_PROTOTYPES
 #include <GL/glut.h>
+#include <GLFW/glfw3.h>
+
 
 bool loadShader(GLuint, const char*);
+void onError(int, const char*);
 
 int main(){
+    // set callback
+    glfwSetErrorCallback(onError);
+
+    // initialization
+    if(glfwInit() != GL_TRUE){
+        std::cerr << "Failed to initialize opengl. " << std::endl;
+        exit(EXIT_FAILURE);
+    }
+
+    // create window
+    GLFWwindow* window 
+        = glfwCreateWindow(
+            640, // width
+            480, // height
+            "OpenGL Sample", // title
+            NULL,
+            NULL
+        );
+    if(window == NULL){
+        std::cerr << "Failed to create a window. " << std::endl;
+        exit(EXIT_FAILURE);
+    }
+
+    // create opengl context
+    glfwMakeContextCurrent(window);
+
 	// set background color (= default color)
 	glClearColor(1.0, 1.0, 1.0, 1.0);
 
@@ -18,6 +47,13 @@ int main(){
 
 	GLuint frag_shader = glCreateShader(GL_FRAGMENT_SHADER);
 	if(!loadShader(frag_shader, "glsl/fragment.glsl")){ exit(EXIT_FAILURE); }
+
+    while(glfwWindowShouldClose(window) == GL_FALSE){
+        glClear(GL_COLOR_BUFFER_BIT);
+
+        glfwSwapBuffers(window);
+        glfwPollEvents();
+    }
 
 	return 0;
 }
@@ -61,4 +97,12 @@ bool loadShader(GLuint shader_id, const char* filename){
 	}
 
 	return true;
+}
+
+void onError(int err, const char* msg){
+    std::cerr 
+        << "GLFW Error  Code:" << err << "\n"
+        << msg
+        << std::endl;
+    return;
 }
