@@ -10,6 +10,7 @@
 
 bool loadShader(GLuint, const char*);
 void onError(int, const char*);
+void logMessage(int);
 
 int main(){
     // set callback
@@ -39,7 +40,11 @@ int main(){
     glfwMakeContextCurrent(window);
 
 	// set background color (= default color)
-	glClearColor(1.0, 1.0, 1.0, 1.0);
+	glClearColor(0.0, 0.0, 0.0, 1.0);
+
+	//=========================================
+	// Prepare Shader Programs
+	//=========================================
 
 	// create shader objects
 	GLuint vertex_shader = glCreateShader(GL_VERTEX_SHADER);
@@ -48,8 +53,77 @@ int main(){
 	GLuint frag_shader = glCreateShader(GL_FRAGMENT_SHADER);
 	if(!loadShader(frag_shader, "glsl/fragment.glsl")){ exit(EXIT_FAILURE); }
 
+	// create shader program
+	GLuint shader_program = glCreateProgram();
+
+	// bind shader objects
+	glAttachShader(shader_program, vertex_shader);
+	glAttachShader(shader_program, frag_shader);
+
+	// bind attributes
+	glBindAttribLocation(shader_program, 0, "position");
+	glBindAttribLocation(shader_program, 1, "color");
+
+	// link
+	glLinkProgram(shader_program);
+	GLint result = GL_FALSE;
+	glGetProgramiv(shader_program, GL_LINK_STATUS, &result);
+	if(result != GL_TRUE){
+		GLsizei log_len = 0;
+		GLchar log_msg[1024] = {};
+		glGetProgramInfoLog(shader_program, 1024, &log_len, log_msg);
+
+		std::cerr 
+			<< "Failed to link shader program. \n"
+			<< log_msg
+			<< std::endl;
+		exit(EXIT_FAILURE);
+	}
+
+	//=========================================
+	// Prepare Buffers
+	//=========================================
+	
+	float points[] = {
+		0.0f, 0.5f, 0.0f,
+		0.5f, -0.5f, 0.0f,
+		-0.5f, -0.5f, 0.0f
+	};
+
+	// 
+	GLuint vertex_buffer;
+	glGenBuffers(1, &vertex_buffer);
+	glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
+
+	// allocate memory
+	GLint buf_size = 9 * sizeof(float);
+	//glBufferData(GL_ARRAY_BUFFER, buf_size, 0, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, buf_size, points, GL_STATIC_DRAW);
+	GLint size_allocated = 0;
+	glGetBufferParameteriv(GL_ARRAY_BUFFER, GL_BUFFER_SIZE, &size_allocated);
+	if(size_allocated != buf_size){
+		std::cerr << "Failed to allocate memory for buffer. " << std::endl;
+		glDeleteBuffers(1, &vertex_buffer);
+		exit(EXIT_FAILURE);
+	}
+
+
+	//=========================================
+	// Main Loop
+	//=========================================
     while(glfwWindowShouldClose(window) == GL_FALSE){
-        glClear(GL_COLOR_BUFFER_BIT);
+        // initialize
+		glClear(GL_COLOR_BUFFER_BIT);
+
+		// bind program
+		glUseProgram(shader_program);
+
+		// bind buffer
+		glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
+
+		// draw
+		glDrawArrays(GL_TRIANGLES, 0, 3);
+
 
         glfwSwapBuffers(window);
         glfwPollEvents();
@@ -85,7 +159,7 @@ bool loadShader(GLuint shader_id, const char* filename){
 	glGetShaderiv(shader_id, GL_COMPILE_STATUS, &result);
 	if(result != GL_TRUE){
 		GLsizei log_len = 0;
-		GLchar log_msg[1024] = "No message";
+		GLchar log_msg[1024] = {};
 		glGetShaderInfoLog(shader_id, 1024, &log_len, log_msg);
 		
 		std::cerr 
