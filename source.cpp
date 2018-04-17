@@ -7,18 +7,10 @@
 #include <GL/glut.h>
 #include <GLFW/glfw3.h>
 
-#if !defined(NDEBUG)
-    #define checkGLErrors(val) check( (val), #val, __FILE__, __LINE__)
-#else
-    #define checkGLErrors(ignore) ((void)0)
-#endif
-
 bool loadShader(GLuint, const char*);
 void onError(int, const char*);
 //void logMessage(int);
-
-template <typename T>
-T check(T, char const *const, const char *const, int const);
+void checkGLError();
 
 int main(){
     // set callback
@@ -48,7 +40,7 @@ int main(){
     glfwMakeContextCurrent(window);
 
 	// set background color (= default color)
-	checkGLErrors(glClearColor(0.0, 0.0, 0.0, 1.0));
+	glClearColor(0.0, 0.0, 0.0, 1.0);
 
 	//=========================================
 	// Prepare Shader Programs
@@ -60,27 +52,27 @@ int main(){
 
 	GLuint frag_shader = glCreateShader(GL_FRAGMENT_SHADER);
 	if(!loadShader(frag_shader, "glsl/fragment.glsl")){ exit(EXIT_FAILURE); }
-//checkGLError();
+checkGLError();
 
 	// create shader program
 	GLuint shader_program = glCreateProgram();
-//checkGLError();
+checkGLError();
 
 	// bind shader objects
 	glAttachShader(shader_program, vertex_shader);
-//checkGLError();
+checkGLError();
 	glAttachShader(shader_program, frag_shader);
-//checkGLError();
+checkGLError();
 
 	// bind attributes
 //	glBindAttribLocation(shader_program, 0, "position");
-//checkGLError();
+checkGLError();
 //	glBindAttribLocation(shader_program, 1, "color");
-//checkGLError();
+checkGLError();
 
 	// link
 	glLinkProgram(shader_program);
-//checkGLError();
+checkGLError();
 	GLint result = GL_FALSE;
 	glGetProgramiv(shader_program, GL_LINK_STATUS, &result);
 	if(result != GL_TRUE){
@@ -94,7 +86,7 @@ int main(){
 			<< std::endl;
 		exit(EXIT_FAILURE);
 	}
-//checkGLError();
+checkGLError();
 
 	//=========================================
 	// Prepare Buffers
@@ -109,15 +101,15 @@ int main(){
 	// 
 	GLuint vertex_buffer;
 	glGenBuffers(1, &vertex_buffer);
-//checkGLError();
+checkGLError();
 	glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
-//checkGLError();
+checkGLError();
 
 	// allocate memory
 	GLint buf_size = 9 * sizeof(float);
 	//glBufferData(GL_ARRAY_BUFFER, buf_size, 0, GL_STATIC_DRAW);
 	glBufferData(GL_ARRAY_BUFFER, buf_size, points, GL_STATIC_DRAW);
-//checkGLError();
+checkGLError();
 	GLint size_allocated = 0;
 	glGetBufferParameteriv(GL_ARRAY_BUFFER, GL_BUFFER_SIZE, &size_allocated);
 	if(size_allocated != buf_size){
@@ -125,7 +117,7 @@ int main(){
 		glDeleteBuffers(1, &vertex_buffer);
 		exit(EXIT_FAILURE);
 	}
-//checkGLError();
+checkGLError();
 
 	// bind to vertex array object
 	GLuint va_object = 0;
@@ -142,26 +134,26 @@ int main(){
     while(glfwWindowShouldClose(window) == GL_FALSE){
         // initialize
 		glClear(GL_COLOR_BUFFER_BIT);
-//checkGLError();
+checkGLError();
 
 		// bind program
 		glUseProgram(shader_program);
-//checkGLError();
+checkGLError();
 
 		// bind buffer
 //		glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
 		glBindVertexArray(va_object);
-//checkGLError();
+checkGLError();
 
 		// draw
 		glDrawArrays(GL_TRIANGLES, 0, 3);
-//checkGLError();
+checkGLError();
 
 
         glfwSwapBuffers(window);
-//checkGLError();
+checkGLError();
         glfwPollEvents();
-//checkGLError();
+checkGLError();
     }
 
 	return 0;
@@ -216,13 +208,7 @@ void onError(int err, const char* msg){
     return;
 }
 
-template <typename T>
-T check(
-    T result, 
-    char const *const func, 
-    const char *const file, 
-    int const line
-){
+void checkGLError(){
 	GLenum err = glGetError();
 
     if(err == GL_NO_ERROR){
@@ -258,9 +244,9 @@ T check(
 	}
 
 	std::cerr 
-        << "OpenGL Error at " << file << ":" << line << "\n"
+        << "OpenGL Error at " << __FILE__ << ":" << __LINE__ << "\n"
         << msg 
         << std::endl;
 	
-    return result;
+    return;
 }
