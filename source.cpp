@@ -67,9 +67,9 @@ checkGLError();
 checkGLError();
 
 	// bind attributes
-	glBindAttribLocation(shader_program, 0, "position");
+//	glBindAttribLocation(shader_program, 0, "position");
 checkGLError();
-	glBindAttribLocation(shader_program, 1, "color");
+//	glBindAttribLocation(shader_program, 1, "color");
 checkGLError();
 
 	// link
@@ -121,6 +121,14 @@ checkGLError();
 	}
 checkGLError();
 
+	// bind to vertex array object
+	GLuint va_object = 0;
+	glGenVertexArrays(1, &va_object);
+	glBindVertexArray(va_object);
+	glEnableVertexAttribArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+
 
 	//=========================================
 	// Main Loop
@@ -135,7 +143,8 @@ checkGLError();
 //checkGLError();
 
 		// bind buffer
-		glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
+//		glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
+		glBindVertexArray(va_object);
 //checkGLError();
 
 		// draw
