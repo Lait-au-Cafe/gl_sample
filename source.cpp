@@ -1,4 +1,5 @@
 #include <iostream>
+#include <sstream>
 #include <fstream>
 #include <string>
 #include <iterator>
@@ -216,36 +217,41 @@ void checkGLError(){
         return;
     }
 
-	std::string msg;
+    std::stringstream msg;
 	switch(err){
 		case GL_INVALID_ENUM:
-			msg = "An unacceptable value is specified for an enumerated argument. ";
+			msg << "An unacceptable value is specified"
+                << " for an enumerated argument. ";
 			break;
 		case GL_INVALID_VALUE:
-			msg = "A numeric argument is out of range. ";
+			msg << "A numeric argument is out of range. ";
 			break;
 		case GL_INVALID_OPERATION:
-			msg = "The specified operation is not allowed in the current state. ";
+			msg << "The specified operation is not allowed"
+                << " in the current state. ";
 			break;
 		case GL_INVALID_FRAMEBUFFER_OPERATION:
-			msg = "The framebuffer object is not complete.";
+			msg << "The framebuffer object is not complete.";
 			break;
 		case GL_OUT_OF_MEMORY:
-			msg = "There is not enough memory left to execute the command. ";
+			msg << "There is not enough memory left"
+                << " to execute the command. ";
 			break;
 		case GL_STACK_UNDERFLOW:
-			msg = "An attempt has been made to perform an operation that would cause an internal stack to underflow.";
+			msg << "An attempt has been made to perform an operation"
+                << " that would cause an internal stack to underflow.";
 			break;
 		case GL_STACK_OVERFLOW:
-			msg = "An attempt has been made to perform an operation that would cause an internal stack to overflow.";
+			msg << "An attempt has been made to perform an operation"
+                << " that would cause an internal stack to overflow.";
 			break;
 		default:
-			msg = "Unknown error id";
+			msg << "Unknown error id";
 	}
 
 	std::cerr 
         << "OpenGL Error at " << __FILE__ << ":" << __LINE__ << "\n"
-        << msg 
+        << msg.str()
         << std::endl;
 	
     return;
