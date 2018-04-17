@@ -50,23 +50,31 @@ int main(){
 	// create shader objects
 	GLuint vertex_shader = glCreateShader(GL_VERTEX_SHADER);
 	if(!loadShader(vertex_shader, "glsl/vertex.glsl")){ exit(EXIT_FAILURE); }
+checkGLError();
 
 	GLuint frag_shader = glCreateShader(GL_FRAGMENT_SHADER);
 	if(!loadShader(frag_shader, "glsl/fragment.glsl")){ exit(EXIT_FAILURE); }
+checkGLError();
 
 	// create shader program
 	GLuint shader_program = glCreateProgram();
+checkGLError();
 
 	// bind shader objects
 	glAttachShader(shader_program, vertex_shader);
+checkGLError();
 	glAttachShader(shader_program, frag_shader);
+checkGLError();
 
 	// bind attributes
 	glBindAttribLocation(shader_program, 0, "position");
+checkGLError();
 	glBindAttribLocation(shader_program, 1, "color");
+checkGLError();
 
 	// link
 	glLinkProgram(shader_program);
+checkGLError();
 	GLint result = GL_FALSE;
 	glGetProgramiv(shader_program, GL_LINK_STATUS, &result);
 	if(result != GL_TRUE){
@@ -80,6 +88,7 @@ int main(){
 			<< std::endl;
 		exit(EXIT_FAILURE);
 	}
+checkGLError();
 
 	//=========================================
 	// Prepare Buffers
@@ -94,12 +103,15 @@ int main(){
 	// 
 	GLuint vertex_buffer;
 	glGenBuffers(1, &vertex_buffer);
+checkGLError();
 	glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
+checkGLError();
 
 	// allocate memory
 	GLint buf_size = 9 * sizeof(float);
 	//glBufferData(GL_ARRAY_BUFFER, buf_size, 0, GL_STATIC_DRAW);
 	glBufferData(GL_ARRAY_BUFFER, buf_size, points, GL_STATIC_DRAW);
+checkGLError();
 	GLint size_allocated = 0;
 	glGetBufferParameteriv(GL_ARRAY_BUFFER, GL_BUFFER_SIZE, &size_allocated);
 	if(size_allocated != buf_size){
@@ -107,6 +119,7 @@ int main(){
 		glDeleteBuffers(1, &vertex_buffer);
 		exit(EXIT_FAILURE);
 	}
+checkGLError();
 
 
 	//=========================================
@@ -115,19 +128,25 @@ int main(){
     while(glfwWindowShouldClose(window) == GL_FALSE){
         // initialize
 		glClear(GL_COLOR_BUFFER_BIT);
+//checkGLError();
 
 		// bind program
 		glUseProgram(shader_program);
+//checkGLError();
 
 		// bind buffer
 		glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
+//checkGLError();
 
 		// draw
 		glDrawArrays(GL_TRIANGLES, 0, 3);
+//checkGLError();
 
 
         glfwSwapBuffers(window);
+//checkGLError();
         glfwPollEvents();
+//checkGLError();
     }
 
 	return 0;
