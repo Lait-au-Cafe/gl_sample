@@ -7,7 +7,7 @@ int main(){
 
     while(true){
 		if(!v.update()){
-			std::cout << "Exit.." << std::endl;
+			std::cout << "Exit." << std::endl;
 			break;
 		}
 	}
