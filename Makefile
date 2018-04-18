@@ -1,10 +1,14 @@
 CXXFLAGS=-std=c++11 -Wall -Wextra -Werror -g
-LIBS=-lglut -lGLU -lGL -lglfw
+GLLIBS=-lGLU -lGL -lglfw
 TARGET=gl_sample
 
-$(TARGET): source.cpp
-	g++ -o $@ $< $(CXXFLAGS) $(LIBS)
+$(TARGET): source.o viewer.o
+	g++ -o $@ $^ $(GLLIBS)
+
+viewer.o: viewer.cpp viewer.hpp
+	g++ -c $< $(CXXFLAGS)
 
 .PHONY: clean
 clean:
 	rm -f $(TARGET)
+	rm -f *.o
