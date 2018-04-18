@@ -5,7 +5,6 @@
 #include <iterator>
 
 #define GL_GLEXT_PROTOTYPES
-#include <GL/glut.h>
 #include <GLFW/glfw3.h>
 
 class Viewer {

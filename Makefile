@@ -1,5 +1,5 @@
 CXXFLAGS=-std=c++11 -Wall -Wextra -Werror -g
-GLLIBS=-lglut -lGLU -lGL -lglfw
+GLLIBS=-lGLU -lGL -lglfw
 TARGET=gl_sample
 
 $(TARGET): source.o viewer.o
