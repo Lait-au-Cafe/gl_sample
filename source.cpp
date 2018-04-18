@@ -1,11 +1,16 @@
-#include <iostream>
 #include "viewer.hpp"
 
 int main(){
-    Viewer viewer;
-    viewer.init();
+	Viewer v;
 
-    while(viewer.update()){}
+    v.init();
+
+    while(true){
+		if(!v.update()){
+			std::cout << "Exit.." << std::endl;
+			break;
+		}
+	}
 
 	return 0;
 }

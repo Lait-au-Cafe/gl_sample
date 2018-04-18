@@ -8,6 +8,9 @@ $(TARGET): source.o viewer.o
 viewer.o: viewer.cpp viewer.hpp
 	g++ -c $< $(CXXFLAGS)
 
+source.o: source.cpp viewer.hpp
+	g++ -c $< $(CXXFLAGS)
+
 .PHONY: clean
 clean:
 	rm -f $(TARGET)
