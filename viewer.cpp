@@ -11,6 +11,10 @@ void Viewer::init(){
         std::cerr << "Failed to initialize opengl. " << std::endl;
         exit(EXIT_FAILURE);
     }
+	
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, true);
 
     // create window
     window = glfwCreateWindow(
